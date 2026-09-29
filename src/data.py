@@ -34,9 +34,18 @@ class CUBDataset(Dataset):
         if self.condition == "original":
             pass # Keep original image
         elif self.condition == "bbox":
-            pass # Implement later
+            left = max(0, int(row["x"]))
+            upper = max(0, int(row["y"]))
+            right = min(img.width, int(row["x"] + row["w"]))
+            lower = min(img.height, int(row["y"] + row["h"]))
+            img = img.crop((left, upper, right, lower))
         elif self.condition == "seg_fg":
-            pass # Implement later
+            mask_path = config.DATA_DIR / "segmentations" / row["path"].replace(".jpg", ".png")
+            mask = Image.open(mask_path).convert("L")
+            if mask.size != img.size:
+                mask = mask.resize(img.size, Image.Resampling.NEAREST)
+            black_bg = Image.new("RGB", img.size, (0, 0, 0))
+            img = Image.composite(img, black_bg, mask)
         elif self.condition == "bg_only":
             pass # Implement later
         elif self.condition == "bg_swap":

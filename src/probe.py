@@ -15,9 +15,9 @@ def train_probe(model_name="resnet50", condition="original", num_epochs=100):
     train_data = torch.load(train_path)
     test_data = torch.load(test_path)
     
-    X_train_full = train_data["features"]
+    X_train_full = train_data["features"].float()
     y_train_full = train_data["labels"]
-    X_test = test_data["features"]
+    X_test = test_data["features"].float()
     y_test = test_data["labels"]
     
     # Standardize features

@@ -1,3 +1,9 @@
 .venv
 CUB_200_2011/
 CUB_200_2011.tgz
+
+# Generated output and cache
+features/
+results/
+__pycache__/
+*.pyc
