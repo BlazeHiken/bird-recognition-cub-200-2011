@@ -47,9 +47,22 @@ class CUBDataset(Dataset):
             black_bg = Image.new("RGB", img.size, (0, 0, 0))
             img = Image.composite(img, black_bg, mask)
         elif self.condition == "bg_only":
-            pass # Implement later
+            from PIL import ImageOps
+            mask_path = config.DATA_DIR / "segmentations" / row["path"].replace(".jpg", ".png")
+            mask = Image.open(mask_path).convert("L")
+            if mask.size != img.size:
+                mask = mask.resize(img.size, Image.Resampling.NEAREST)
+            mask_inv = ImageOps.invert(mask)
+            black_bg = Image.new("RGB", img.size, (0, 0, 0))
+            img = Image.composite(img, black_bg, mask_inv)
         elif self.condition == "bg_swap":
-            pass # Implement later
+            mask_path = config.DATA_DIR / "segmentations" / row["path"].replace(".jpg", ".png")
+            mask = Image.open(mask_path).convert("L")
+            if mask.size != img.size:
+                mask = mask.resize(img.size, Image.Resampling.NEAREST)
+            # Use a solid gray background as the controlled alternative
+            gray_bg = Image.new("RGB", img.size, (128, 128, 128))
+            img = Image.composite(img, gray_bg, mask)
             
         if self.transform:
             img = self.transform(img)
